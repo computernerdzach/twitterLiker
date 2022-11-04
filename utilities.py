@@ -37,7 +37,7 @@ def follow_and_report(random_number: int, logfile: TextIO, client: requests.sess
     report(message=message, logfile=logfile)
 
     # follow tweet author and report
-    client.follow_user(author_id=author_id)
+    client.follow_user(author_id)
     message = f"[FOLLOWED AUTHOR] -- author id: {author} -- {right_now()}"
     report(message=message, logfile=logfile)
 
