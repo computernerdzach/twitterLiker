@@ -39,13 +39,7 @@ while run:
 
     # increment and initiate next run of 100 tweets
     log_next_run(logfile=logfile)
-    user_answer = ""
-    while (user_answer != "y") and (user_answer != "n"):
-        user_answer = input("Continue? [y] or [n]\n> ")
-        if user_answer.lower() == 'y':
-            run = True
-        elif user_answer.lower() == 'n':
-            run = False
-        else:
-            print('Please enter "y" or "n" and press enter.')
     tweet_run += 1
+
+    # another round?
+    run = go_again()

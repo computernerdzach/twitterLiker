@@ -137,3 +137,16 @@ def log_next_run(logfile: TextIO):
     message = f"[INITIATE TWEET RETRIEVAL] -- of 100 tweets -- {right_now()}"
     report(message=message, logfile=logfile)
 
+
+def go_again():
+    user_answer = ""
+    while (user_answer != "y") and (user_answer != "n"):
+        user_answer = input("Continue? [y] or [n]\n> ")
+        if user_answer.lower() == 'y':
+            run = True
+        elif user_answer.lower() == 'n':
+            run = False
+        else:
+            print('Please enter "y" or "n" and press enter.')
+    return run
+
