@@ -109,9 +109,13 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 
 # like each tweet
 def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfile: TextIO,
-                             client: requests.session, api: tweepy.API):
+                             client: requests.session, api: tweepy.API, tweet_count: int):
     for tweet in tweets.data:
         try:
+            # increment tweet count and report
+            tweet_count += 1
+            report(message=f"tweet_count: {tweet_count}", logfile=logfile)
+
             # like and report
             like_and_report(client=client, tweet=tweet, logfile=logfile)
 
@@ -124,6 +128,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
 
             # chill for a bit
             time.sleep(35)
+            return tweet_count
 
         # report oopsies
         except Exception as e:
