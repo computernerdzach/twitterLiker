@@ -24,7 +24,6 @@ run = True
 tweet_run = 1
 
 while run:
-    tweet_count = 0
     # follow back all followers
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
 
@@ -36,13 +35,13 @@ while run:
                                          expansions=['entities.mentions.username', 'author_id'],
                                          user_fields=['username'], max_results=100)
 
+    # start tweet_count over every batch of 100 tweets
+    tweet_count = 0
+
     # like the tweets and randomly select a few authors to follow
-    tweet_count = like_tweet_random_follow(tweets=tweets, tweet_run=tweet_run, logfile=logfile,
-                                           client=client, api=api, tweet_count=tweet_count)
+    run = like_tweet_random_follow(tweets=tweets, tweet_run=tweet_run, logfile=logfile,
+                                                client=client, api=api, tweet_count=tweet_count)
 
     # increment and initiate next run of 100 tweets
     log_next_run(logfile=logfile)
     tweet_run += 1
-
-    # another round?
-    run = go_again()

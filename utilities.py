@@ -109,7 +109,7 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 
 # like each tweet
 def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfile: TextIO,
-                             client: requests.session, api: tweepy.API, tweet_count: int):
+                             client: requests.session, api: tweepy.API, tweet_count: int) -> bool:
     for tweet in tweets.data:
         try:
             # like and report
@@ -127,13 +127,17 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
 
             # chill for a bit
             time.sleep(35)
-            return tweet_count
+            # return tweet_count
 
         # report oopsies
         except Exception as e:
             message = f"{e} --- {right_now()}"
             report(message=message, logfile=logfile)
             time.sleep(10)
+
+    # another round?
+    run = go_again(logfile=logfile)
+    return run
 
 
 # report that the next run is starting
@@ -142,15 +146,12 @@ def log_next_run(logfile: TextIO):
     report(message=message, logfile=logfile)
 
 
-def go_again():
-    user_answer = ""
+def go_again(logfile: TextIO) -> bool:
+    user_answer = input("Continue? [y] or [n]\n> ").lower()
     while (user_answer != "y") and (user_answer != "n"):
-        user_answer = input("Continue? [y] or [n]\n> ")
-        if user_answer.lower() == 'y':
-            run = True
-        elif user_answer.lower() == 'n':
-            run = False
-        else:
-            print('Please enter "y" or "n" and press enter.')
-    return run
-
+        message = 'Please enter "y" or "n" and press enter.'
+        report(message=message, logfile=logfile)
+    if user_answer == "n":
+        return False
+    elif user_answer == "y":
+        return True
