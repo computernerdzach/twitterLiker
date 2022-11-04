@@ -27,7 +27,7 @@ while main:
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
 
     # set log sub-heading
-    logfile.write(set_sub_heading(tweet_run=tweet_run))
+    logfile.write(set_sub_heading(tweet_run=tweet_run, logfile=logfile))
 
     # get 100 tweets matching hashtags, and returning desired data
     tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
