@@ -35,7 +35,6 @@ def follow_and_report(random_number: int, logfile: TextIO, client: requests.sess
     # compare random number for user
     message = f"{random_number} = 15... {random_number==15}"
     report(message=message, logfile=logfile)
-
     # follow tweet author and report
     client.follow_user(author_id)
     message = f"[FOLLOWED AUTHOR] -- author id: {author} -- {right_now()}"
@@ -47,23 +46,19 @@ def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session
     try:
         # generate random number and report to log
         random_number = make_and_report_number(logfile=logfile)
-
         # capture the author_id and screen_name of the tweet's author
         author_id = tweet.data['author_id']
         author = api.get_user(user_id=author_id).screen_name
-
         # randomly follow authors of 5% of liked tweets
         if random_number == 15:
             follow_and_report(random_number=random_number, logfile=logfile,
                               client=client, author_id=author_id, author=author)
             return
-
         # report no follow
         else:
             message = f"[NO FOLLOW] -- did not follow author/id: {author}/{author_id} -- {right_now()}"
             report(message=message, logfile=logfile)
             return
-
     # report oopsies
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
@@ -76,24 +71,20 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
     following_ids = []
     for followed in following:
         following_ids.append(followed._json['id'])
-
     for follower in followers:
         # each follower captures id and screen_name
         follower_id = follower._json['id']
         follower_name = api.get_user(user_id=follower_id).screen_name
-
         # if not following, follow and report
         if follower._json['id'] not in following_ids:
             try:
                 client.follow_user(follower_id)
                 message = f"[FOLLOW BACK] -- now following: {follower_name} -- {right_now()}"
                 report(message=message, logfile=logfile)
-
             # report oopsies
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 report(message=message, logfile=logfile)
-
         # else report already following
         else:
             message = f"[FOLLOW BACK] -- already following {follower_name}"
@@ -114,27 +105,21 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
         try:
             # like and report
             like_and_report(client=client, tweet=tweet, logfile=logfile)
-
             # randomly follow (or not) the tweet author
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
-
             # increment tweet
             tweet_count += 1
-
             # log the run count (100 tweets per run)
             message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- Run: {tweet_run}"
             report(message=message, logfile=logfile)
-
             # chill for a bit
             time.sleep(35)
             # return tweet_count
-
         # report oopsies
         except Exception as e:
             message = f"{e} --- {right_now()}"
             report(message=message, logfile=logfile)
             time.sleep(10)
-
     # another round?
     run = go_again(logfile=logfile)
     return run
