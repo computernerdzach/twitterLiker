@@ -20,9 +20,9 @@ message = f"[BEGIN LOG] -- {name}'s log -- {right_now()}"
 report(message=message, logfile=logfile)
 
 # main loop
-main = True
+run = True
 tweet_run = 1
-while main:
+while run:
     # follow back all followers
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
 
@@ -39,4 +39,13 @@ while main:
 
     # increment and initiate next run of 100 tweets
     log_next_run(logfile=logfile)
+    user_answer = ""
+    while (user_answer != "y") and (user_answer != "n"):
+        user_answer = input("Continue? [y] or [n]\n> ")
+        if user_answer.lower() == 'y':
+            run = True
+        elif user_answer.lower() == 'n':
+            run = False
+        else:
+            print('Please enter "y" or "n" and press enter.')
     tweet_run += 1
