@@ -112,18 +112,17 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
                              client: requests.session, api: tweepy.API, tweet_count: int):
     for tweet in tweets.data:
         try:
-            # increment tweet count and report
-            tweet_count += 1
-            report(message=f"tweet_count: {tweet_count}", logfile=logfile)
-
             # like and report
             like_and_report(client=client, tweet=tweet, logfile=logfile)
 
             # randomly follow (or not) the tweet author
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
 
+            # increment tweet
+            tweet_count += 1
+
             # log the run count (100 tweets per run)
-            message = f"[CURRENT RUN] -- of 100 tweets -- {tweet_run}"
+            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- Run: {tweet_run}"
             report(message=message, logfile=logfile)
 
             # chill for a bit
