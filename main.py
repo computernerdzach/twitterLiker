@@ -14,9 +14,8 @@ followers = api.get_followers()
 following = api.get_friends()
 
 # heading for log and readout
-text = f"[BEGIN LOG] -- {name}'s log -- {right_now()}"
-print(text)
-logfile.write(text)
+message = f"[BEGIN LOG] -- {name}'s log -- {right_now()}"
+report(message, logfile)
 
 # main loop
 main = True
