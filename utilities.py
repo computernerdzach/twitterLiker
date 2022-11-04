@@ -85,7 +85,7 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
         # if not following, follow and report
         if follower._json['id'] not in following_ids:
             try:
-                client.follow_user(follower_id=follower_id)
+                client.follow_user(follower_id)
                 message = f"[FOLLOW BACK] -- now following: {follower_name} -- {right_now()}"
                 report(message=message, logfile=logfile)
 
