@@ -1,10 +1,10 @@
 import time
 import datetime
-from random import randint as r
-from typing import TextIO
-
 import requests
 import tweepy
+
+from random import randint
+from typing import TextIO
 
 
 # pick this exact moment right now (at any given moment)
@@ -25,7 +25,7 @@ def set_sub_heading(tweet_run: int) -> str:
 
 
 def make_and_report_number(logfile: TextIO) -> int:
-    random_number = r(1, 20)
+    random_number = randint(1, 20)
     message = f"[FOLLOW DECISION] -- #[{random_number}] -- must match [15]"
     report(message, logfile)
     return random_number
