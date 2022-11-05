@@ -34,5 +34,5 @@ while run:
     run = like_tweet_random_follow(tweets=tweets, tweet_run=tweet_run, logfile=logfile,
                                    client=client, api=api, tweet_count=tweet_count)
     # increment and initiate next run of 100 tweets
-    log_next_run(logfile=logfile)
+    log_next_run(logfile=logfile, tweet_run=tweet_run)
     tweet_run += 1
