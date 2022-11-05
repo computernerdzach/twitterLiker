@@ -33,7 +33,7 @@ def make_and_report_number(logfile: TextIO) -> int:
 
 def follow_and_report(random_number: int, logfile: TextIO, client: requests.session, author_id: int, author: str):
     # compare random number for user
-    message = f"{random_number} = 15... {random_number==15}"
+    message = f"{random_number} = 15... {random_number == 15}"
     report(message=message, logfile=logfile)
     # follow tweet author and report
     client.follow_user(author_id)
@@ -103,25 +103,26 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 # like each tweet
 def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfile: TextIO,
                              client: requests.session, api: tweepy.API, tweet_count: int) -> bool:
-    for tweet in tweets.data:
-        try:
-            # like and report
-            like_and_report(client=client, tweet=tweet, logfile=logfile)
-            # randomly follow (or not) the tweet author
-            random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
-            # increment tweet
-            tweet_count += 1
-            # log the run count (100 tweets per run)
-            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- Run: {tweet_run}"
-            report(message=message, logfile=logfile)
-            # chill for a bit
-            time.sleep(35)
-            # return tweet_count
-        # report oopsies
-        except Exception as e:
-            message = f"{e} --- {right_now()}"
-            report(message=message, logfile=logfile)
-            time.sleep(10)
+    for _ in range(0, 3):
+        for tweet in tweets.data:
+            try:
+                # like and report
+                like_and_report(client=client, tweet=tweet, logfile=logfile)
+                # randomly follow (or not) the tweet author
+                random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
+                # increment tweet
+                tweet_count += 1
+                # log the run count (100 tweets per run)
+                message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- Run: {tweet_run}"
+                report(message=message, logfile=logfile)
+                # chill for a bit
+                time.sleep(35)
+                # return tweet_count
+            # report oopsies
+            except Exception as e:
+                message = f"{e} --- {right_now()}"
+                report(message=message, logfile=logfile)
+                time.sleep(10)
     # another round?
     run = go_again(logfile=logfile)
     return run
@@ -139,6 +140,7 @@ def go_again(logfile: TextIO) -> bool:
         message = 'Please enter "y" or "n" and press enter.'
         report(message=message, logfile=logfile)
     if user_answer == "n":
+        logfile.close()
         return False
     elif user_answer == "y":
         return True
