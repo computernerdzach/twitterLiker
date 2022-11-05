@@ -84,7 +84,8 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 # like each tweet
 def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfile: TextIO,
                              client: requests.session, api: tweepy.API, tweet_count: int) -> bool:
-    for _ in range(0, 3):
+    i = 0
+    while i <= 3:
         for tweet in tweets.data:
             try:
                 # like and report
@@ -105,6 +106,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
                 message = f"[OOPS] -- {e} --- {right_now()}"
                 report(message=message, logfile=logfile)
                 time.sleep(10)
+        i += 1
     # another round?
     run = go_again(logfile=logfile)
     return run
