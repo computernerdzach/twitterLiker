@@ -19,7 +19,7 @@ def report(message: str, logfile: TextIO):
 
 # set now and write heading
 def set_sub_heading(tweet_run: int, logfile: TextIO) -> str:
-    message = f"[TWEET RETRIEVAL] -- # {tweet_run} (asks to continue after every 4 runs) -- {right_now()}"
+    message = f"[TWEET RETRIEVAL] -- # {tweet_run} (asks to continue after 4 runs) -- {right_now()}"
     report(message=message, logfile=logfile)
     return message
 
@@ -95,7 +95,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
                 tweet_count += 1
                 # log the run count (100 tweets per run)
                 message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- " \
-                          f"Run: {tweet_run} (asks to continue after every 4 runs)"
+                          f"Run: {tweet_run} (asks to continue after 4 runs)"
                 report(message=message, logfile=logfile)
                 # chill for a bit
                 time.sleep(35)
@@ -112,7 +112,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfil
 
 # report that the next run is starting
 def log_next_run(logfile: TextIO, tweet_run: int):
-    message = f"[INITIATE TWEET RETRIEVAL] {tweet_run}-- of 100 tweets (asks to continue after every 4 runs) -- {right_now()}"
+    message = f"[INITIATE TWEET RETRIEVAL] {tweet_run}-- of 100 tweets (asks to continue after 4 runs) -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
