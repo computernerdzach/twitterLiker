@@ -76,8 +76,8 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
         follower_id = follower._json['id']
         follower_name = api.get_user(user_id=follower_id).screen_name
         # if not following, follow and report
-        report(message=f"is {follower_id} in {following_ids}?", logfile=logfile)
-        time.sleep(0.5)
+        report(message=f"is {follower_id} in following_ids? {follower_id in following_ids}!", logfile=logfile)
+        time.sleep(1.5)
         if follower_id not in following_ids:
             try:
                 client.follow_user(follower_id)
