@@ -7,7 +7,6 @@ from random import randint
 from typing import TextIO
 
 
-# pick this exact moment right now (at any given moment)
 def right_now() -> str:
     return datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
 
@@ -18,29 +17,25 @@ def report(message: str, logfile: TextIO):
 
 
 def follow_and_report(logfile: TextIO, client: requests.session, author_id: int, author: str):
-    # follow tweet author and report
     client.follow_user(author_id)
     message = f"    [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
-# randomly select accounts to follow
 def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session, api: tweepy.API):
     try:
-        random_number = randint(1, 20)
-        # capture the author_id and screen_name of the tweet's author
         author_id = tweet.data['author_id']
         author = api.get_user(user_id=author_id).screen_name
-        # randomly follow authors of 5% of liked tweets
+
+        random_number = randint(1, 20)
         if random_number == 15:
             follow_and_report(logfile=logfile, client=client, author_id=author_id, author=author)
-    # report oopsies
+
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
         report(message=message, logfile=logfile)
 
 
-# follow back all followers
 def follow_back(followers: list, following: list, logfile: TextIO, client: requests.session, api: tweepy.API):
     for follower in followers:
         if follower not in following:
@@ -57,7 +52,6 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
 
 
 def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
-    # like each tweet that is found and report
     client.like(tweet.id)
     message = f"[LIKED TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
               f"    {tweet.text[0:70]}\n" \
@@ -72,20 +66,15 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
     for tweet in tweets.data:
         try:
             like_and_report(client=client, tweet=tweet, logfile=logfile, tweet_run=tweet_run, tweet_count=tweet_count)
-            # randomly follow (or not) the tweet author
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
-            # increment tweet
             tweet_count += 1
-            # chill for a bit
             time.sleep(randint(20, 45))
-        # report oopsies
         except Exception as e:
             message = f"[OOPS] -- {e} --- {right_now()}"
             report(message=message, logfile=logfile)
             time.sleep(10)
 
 
-# report that the next run is starting
 def log_next_run(logfile: TextIO, tweet_run: int):
     message = f"[INITIATE TWEET RETRIEVAL] {tweet_run}-- of 100 tweets (asks to continue after 4 runs) -- {right_now()}"
     report(message=message, logfile=logfile)
@@ -112,16 +101,12 @@ def go_again(logfile: TextIO) -> bool:
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
          client: requests.session, api: tweepy.API, query: str, tweet_run: int):
-    # follow back all followers
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
     for i in range(0, 4):
-        # get 100 tweets matching hashtags, and returning desired data
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
-        # like the tweets and randomly select a few authors to follow
-        like_tweet_random_follow(tweets=tweets, logfile=logfile,
-                                 client=client, api=api, tweet_run=tweet_run)
+        like_tweet_random_follow(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
         tweet_run += 1
     return tweet_run
 
