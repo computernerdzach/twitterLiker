@@ -1,3 +1,5 @@
+import sys
+
 from credentials import *
 from utilities import *
 
@@ -20,5 +22,6 @@ run = True
 tweet_run = 1
 
 while run:
-    main(followers=followers, following=following, logfile=logfile,
-         client=client, api=api, tweet_run=tweet_run, query=query)
+    run = main(followers=followers, following=following, logfile=logfile,
+               client=client, api=api, tweet_run=tweet_run, query=query)
+sys.exit()

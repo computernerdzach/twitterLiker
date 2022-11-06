@@ -84,7 +84,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
             # increment tweet
             tweet_count += 1
             # log the run count (100 tweets per run)
-            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run #{run}"
+            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run # {run + 1}"
             report(message=message, logfile=logfile)
             # chill for a bit
             time.sleep(35)
@@ -140,3 +140,4 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
                                        client=client, api=api, run=i)
         # increment and initiate next run of 100 tweets
     log_next_run(logfile=logfile, tweet_run=tweet_run)
+    return run
