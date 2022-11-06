@@ -14,7 +14,7 @@ def right_now() -> str:
 
 def report(message: str, logfile: TextIO):
     print(message)
-    logfile.write(message)
+    logfile.write(f"{message}\n")
 
 
 # set now and write heading
