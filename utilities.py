@@ -20,7 +20,7 @@ def report(message: str, logfile: TextIO):
 def follow_and_report(logfile: TextIO, client: requests.session, author_id: int, author: str):
     # follow tweet author and report
     client.follow_user(author_id)
-    message = f"[RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
+    message = f"    [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
@@ -59,7 +59,7 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
 def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
     # like each tweet that is found and report
     client.like(tweet.id)
-    message = f"[LIKED TWEET] #: {tweet_run} of 100; run: {tweet_count}.\n" \
+    message = f"[LIKED TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
               f"    {tweet.text[0:70]}\n" \
               f"    [liked time]: {right_now()}"
     report(message=message, logfile=logfile)
