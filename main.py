@@ -23,7 +23,7 @@ tweet_run = 1
 
 while run:
     main(followers=followers, following=following, logfile=logfile,
-         client=client, api=api, tweet_run=tweet_run, query=query)
+         client=client, api=api, query=query)
     # another round?
     run = go_again(logfile=logfile)
     # increment and initiate next run of 100 tweets

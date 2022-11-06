@@ -17,13 +17,6 @@ def report(message: str, logfile: TextIO):
     logfile.write(f"{message}\n")
 
 
-# set now and write heading
-def set_sub_heading(tweet_run: int, logfile: TextIO) -> str:
-    message = f"[TWEET RETRIEVAL] -- # {tweet_run} (asks to continue after 4 runs) -- {right_now()}"
-    report(message=message, logfile=logfile)
-    return message
-
-
 def follow_and_report(logfile: TextIO, client: requests.session, author_id: int, author: str):
     # follow tweet author and report
     client.follow_user(author_id)
@@ -41,7 +34,6 @@ def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session
         # randomly follow authors of 5% of liked tweets
         if random_number == 15:
             follow_and_report(logfile=logfile, client=client, author_id=author_id, author=author)
-            return
     # report oopsies
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
@@ -60,14 +52,16 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 report(message=message, logfile=logfile)
         else:
-            message = f"[FOLLOW BACK] -- already following {api.get_user(user_id=follower).screen_name}"
+            message = f"[NO FOLLOW] -- already following {api.get_user(user_id=follower).screen_name}"
             report(message=message, logfile=logfile)
 
 
-def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO):
+def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
     # like each tweet that is found and report
     client.like(tweet.id)
-    message = f"[LIKED TWEET] -- # {tweet.text[0:50]}... -- {right_now()}"
+    message = f"[LIKED TWEET] #: {tweet_run} of 100; run: {tweet_count}.\n" \
+              f"    {tweet.text[0:70]}\n" \
+              f"    [liked time]: {right_now()}"
     report(message=message, logfile=logfile)
 
 
@@ -77,10 +71,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
     tweet_count = 1
     for tweet in tweets.data:
         try:
-            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run # {tweet_run + 1}"
-            report(message=message, logfile=logfile)
-            # like and report
-            like_and_report(client=client, tweet=tweet, logfile=logfile)
+            like_and_report(client=client, tweet=tweet, logfile=logfile, tweet_run=tweet_run, tweet_count=tweet_count)
             # randomly follow (or not) the tweet author
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
             # increment tweet
@@ -120,11 +111,9 @@ def go_again(logfile: TextIO) -> bool:
 
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
-         client: requests.session, api: tweepy.API, tweet_run: int, query: str):
+         client: requests.session, api: tweepy.API, query: str):
     # follow back all followers
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
-    # set log sub-heading
-    logfile.write(set_sub_heading(tweet_run=tweet_run, logfile=logfile))
     for i in range(0, 3):
         # get 100 tweets matching hashtags, and returning desired data
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
