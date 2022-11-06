@@ -111,14 +111,18 @@ def go_again(logfile: TextIO) -> bool:
 
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
-         client: requests.session, api: tweepy.API, query: str):
+         client: requests.session, api: tweepy.API, query: str, tweet_run: int):
     # follow back all followers
     follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
-    for i in range(0, 3):
+    for i in range(0, 4):
         # get 100 tweets matching hashtags, and returning desired data
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
         # like the tweets and randomly select a few authors to follow
         like_tweet_random_follow(tweets=tweets, logfile=logfile,
-                                 client=client, api=api, tweet_run=i+1)
+                                 client=client, api=api, tweet_run=tweet_run)
+        tweet_run += 1
+    return tweet_run
+
+
