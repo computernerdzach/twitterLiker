@@ -109,5 +109,3 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
         like_tweet_random_follow(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
         tweet_run += 1
     return tweet_run
-
-
