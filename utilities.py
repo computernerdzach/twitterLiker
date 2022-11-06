@@ -139,5 +139,5 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
         run = like_tweet_random_follow(tweets=tweets, logfile=logfile,
                                        client=client, api=api, run=i)
         # increment and initiate next run of 100 tweets
-    log_next_run(logfile=logfile, tweet_run=tweet_run)
+        log_next_run(logfile=logfile, tweet_run=tweet_run)
     return run
