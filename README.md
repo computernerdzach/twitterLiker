@@ -24,6 +24,9 @@ Navigate to the root directory and enter the following command to run the app.
 ```bash
 python3 main.py
 ```
+## Stopping
+Currently there is no graceful way to exit unless you want to wait for the current run of 100 tweets (at 45 seconds 
+per tweet) to finish, at which point the app will ask if you want to continue. If you want to stop at any other time, you will need to press the `ctrl` and `C` keys at the same time.
 
 ## Contributing
 The repo is currently open for all, but please inquire before making changes.
