@@ -73,30 +73,25 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 
 # like each tweet
 def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
-                             client: requests.session, api: tweepy.API, run: int) -> bool:
-    tweet_count = 0
+                             client: requests.session, api: tweepy.API, tweet_run: int):
+    tweet_count = 1
     for tweet in tweets.data:
         try:
+            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run # {tweet_run + 1}"
+            report(message=message, logfile=logfile)
             # like and report
             like_and_report(client=client, tweet=tweet, logfile=logfile)
             # randomly follow (or not) the tweet author
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
             # increment tweet
             tweet_count += 1
-            # log the run count (100 tweets per run)
-            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run # {run + 1}"
-            report(message=message, logfile=logfile)
             # chill for a bit
-            time.sleep(35)
-            # return tweet_count
+            time.sleep(randint(20, 45))
         # report oopsies
         except Exception as e:
             message = f"[OOPS] -- {e} --- {right_now()}"
             report(message=message, logfile=logfile)
             time.sleep(10)
-    # another round?
-    run = go_again(logfile=logfile)
-    return run
 
 
 # report that the next run is starting
@@ -112,7 +107,7 @@ def go_again(logfile: TextIO) -> bool:
         user_answer = input('Please enter "y" or "n" and press enter.')
     if user_answer == "n":
         message = f"C{question} -- {user_answer}"
-        report(message=message , logfile=logfile)
+        report(message=message, logfile=logfile)
         logfile.close()
         return False
     elif user_answer == "y":
@@ -136,8 +131,5 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
         # like the tweets and randomly select a few authors to follow
-        run = like_tweet_random_follow(tweets=tweets, logfile=logfile,
-                                       client=client, api=api, run=i)
-        # increment and initiate next run of 100 tweets
-        log_next_run(logfile=logfile, tweet_run=tweet_run)
-    return run
+        like_tweet_random_follow(tweets=tweets, logfile=logfile,
+                                 client=client, api=api, tweet_run=i+1)
