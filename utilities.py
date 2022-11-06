@@ -50,27 +50,17 @@ def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session
 
 # follow back all followers
 def follow_back(followers: list, following: list, logfile: TextIO, client: requests.session, api: tweepy.API):
-    # build a list of id's of accounts followed
-    following_ids = []
-    for followed in following:
-        following_ids.append(followed._json['id'])
     for follower in followers:
-        # each follower captures id and screen_name
-        follower_id = follower._json['id']
-        follower_name = api.get_user(user_id=follower_id).screen_name
-        time.sleep(1.5)
-        if follower_id not in following_ids:
+        if follower not in following:
             try:
-                client.follow_user(follower_id)
-                message = f"[FOLLOW BACK] -- now following: {follower_name} -- {right_now()}"
+                client.follow_user(follower)
+                message = f"[FOLLOW BACK] -- now following: {api.get_user(follower).screen_name} -- {right_now()}"
                 report(message=message, logfile=logfile)
-            # report oopsies
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 report(message=message, logfile=logfile)
-        # else report already following
         else:
-            message = f"[FOLLOW BACK] -- already following {follower_name}"
+            message = f"[FOLLOW BACK] -- already following {api.get_user(user_id=follower).screen_name}"
             report(message=message, logfile=logfile)
 
 
@@ -82,31 +72,28 @@ def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: Text
 
 
 # like each tweet
-def like_tweet_random_follow(tweets: {requests.Response}, tweet_run: int, logfile: TextIO,
-                             client: requests.session, api: tweepy.API, tweet_count: int) -> bool:
-    i = 0
-    while i <= 3:
-        for tweet in tweets.data:
-            try:
-                # like and report
-                like_and_report(client=client, tweet=tweet, logfile=logfile)
-                # randomly follow (or not) the tweet author
-                random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
-                # increment tweet
-                tweet_count += 1
-                # log the run count (100 tweets per run)
-                message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- " \
-                          f"Run: {tweet_run} (asks to continue after 4 runs)"
-                report(message=message, logfile=logfile)
-                # chill for a bit
-                time.sleep(35)
-                # return tweet_count
-            # report oopsies
-            except Exception as e:
-                message = f"[OOPS] -- {e} --- {right_now()}"
-                report(message=message, logfile=logfile)
-                time.sleep(10)
-        i += 1
+def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
+                             client: requests.session, api: tweepy.API, run: int) -> bool:
+    tweet_count = 0
+    for tweet in tweets.data:
+        try:
+            # like and report
+            like_and_report(client=client, tweet=tweet, logfile=logfile)
+            # randomly follow (or not) the tweet author
+            random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
+            # increment tweet
+            tweet_count += 1
+            # log the run count (100 tweets per run)
+            message = f"[CURRENT TWEET] -- {tweet_count} of 100 tweets -- run #{run}"
+            report(message=message, logfile=logfile)
+            # chill for a bit
+            time.sleep(35)
+            # return tweet_count
+        # report oopsies
+        except Exception as e:
+            message = f"[OOPS] -- {e} --- {right_now()}"
+            report(message=message, logfile=logfile)
+            time.sleep(10)
     # another round?
     run = go_again(logfile=logfile)
     return run
@@ -135,3 +122,21 @@ def go_again(logfile: TextIO) -> bool:
     else:
         message = "[ERROR] -- beginning next run"
         report(message=message, logfile=logfile)
+
+
+def main(followers: list[int], following: list[int], logfile: TextIO,
+         client: requests.session, api: tweepy.API, tweet_run: int, query: str):
+    # follow back all followers
+    follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
+    # set log sub-heading
+    logfile.write(set_sub_heading(tweet_run=tweet_run, logfile=logfile))
+    for i in range(0, 3):
+        # get 100 tweets matching hashtags, and returning desired data
+        tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
+                                             expansions=['entities.mentions.username', 'author_id'],
+                                             user_fields=['username'], max_results=100)
+        # like the tweets and randomly select a few authors to follow
+        run = like_tweet_random_follow(tweets=tweets, logfile=logfile,
+                                       client=client, api=api, run=i)
+        # increment and initiate next run of 100 tweets
+    log_next_run(logfile=logfile, tweet_run=tweet_run)
