@@ -67,7 +67,7 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
 def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO):
     # like each tweet that is found and report
     client.like(tweet.id)
-    message = f"[LIKED TWEET] -- # {tweet.text[0:25]}... -- {right_now()}"
+    message = f"[LIKED TWEET] -- # {tweet.text[0:50]}... -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
