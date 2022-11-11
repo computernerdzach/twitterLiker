@@ -41,7 +41,7 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
         if follower not in following:
             try:
                 client.follow_user(follower)
-                message = f"[FOLLOW BACK] -- now following: {api.get_user(follower).screen_name} -- {right_now()}"
+                message = f"[FOLLOW BACK] -- now following: {api.get_user(user_id=follower).screen_name} -- {right_now()}"
                 report(message=message, logfile=logfile)
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
