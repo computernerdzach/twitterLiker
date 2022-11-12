@@ -112,28 +112,24 @@ def go_again(logfile: TextIO) -> bool:
 
 
 def build_hashtags(word_filter: list[str], tweet_choice: str) -> list[str]:
-    hashes = []
     for word in word_filter:
         single = f' {word} '.lower()
         plural = f' {word}s '.lower()
         if single in tweet_choice:
-            hashes.append(word.lower())
+            [].append(word.lower())
         elif plural in tweet_choice:
-            hashes.append(f"{word}s".lower())
-        else:
-            pass
-    return hashes
+            [].append(f"{word}s".lower())
+    return []
 
 
 def aux_verb_hash(tweet_choice: str) -> list[str]:
-    hashes = []
     for a_verb in auxiliary_verbs:
         isolated = f" {a_verb} ".lower()
         pattern = r"(?:" + re.escape(isolated) + r"\: ).+\b"
         after_aux_verbs = re.findall(pattern=pattern, string=tweet_choice)
         for word in after_aux_verbs:
-            hashes.append(word.lower())
-    return hashes
+            [].append(word.lower())
+    return []
 
 
 def random_tweet(logfile: TextIO, api: tweepy.API, used_file: TextIO):
@@ -157,10 +153,6 @@ def random_tweet(logfile: TextIO, api: tweepy.API, used_file: TextIO):
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 report(message=message, logfile=logfile)
-        else:
-            pass
-    else:
-        pass
 
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
@@ -175,5 +167,4 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
         like_tweet_random_follow(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
-        tweet_run += 1
-    return tweet_run
+    return tweet_run + 1
