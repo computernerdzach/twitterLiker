@@ -81,7 +81,7 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
             report(message=message, logfile=logfile)
             time.sleep(10)
         try:
-            random_tweet(logfile=logfile)
+            random_tweet(logfile=logfile, api=api)
         except Exception as oops:
             message = f"[OOPS] -- {oops} -- {right_now()}"
             report(message=message, logfile=logfile)
@@ -136,7 +136,7 @@ def aux_verb_hash(tweet_choice: str) -> list[str]:
     return hashes
 
 
-def random_tweet(logfile: TextIO):
+def random_tweet(logfile: TextIO, api: tweepy.API):
     tweet_chance = randint(1, 1000)
     if tweet_chance == 42:
         try:
@@ -148,8 +148,8 @@ def random_tweet(logfile: TextIO):
             message = f"{tweet_choice}\n\n".lower()
             for hashtag in hashes:
                 message += f"#{hashtag} ".lower()
+            api.update_status(message)
             report(message=message, logfile=logfile)
-            return hashes
         except Exception as oops:
             message = f"[OOPS] -- {oops} -- {right_now()}"
             report(message=message, logfile=logfile)
