@@ -42,7 +42,8 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
         if follower not in following:
             try:
                 client.follow_user(follower)
-                message = f"[FOLLOW BACK] -- now following: {api.get_user(user_id=follower).screen_name} -- {right_now()}"
+                message = f"[FOLLOW BACK] -- now following: " \
+                          f"{api.get_user(user_id=follower).screen_name} -- {right_now()}"
                 report(message=message, logfile=logfile)
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
@@ -52,7 +53,8 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
             report(message=message, logfile=logfile)
 
 
-def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
+def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet,
+                          logfile: TextIO, tweet_run: int, tweet_count: int):
     maybe = randint(1, 2)
     if maybe == 2:
         client.like(tweet.id)
@@ -88,7 +90,8 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
 
 
 def log_next_run(logfile: TextIO, tweet_run: int):
-    message = f"[INITIATE TWEET RETRIEVAL] {tweet_run}-- of 100 tweets (asks to continue after 4 runs) -- {right_now()}"
+    message = f"[INITIATE TWEET RETRIEVAL] Run {tweet_run}: 100 tweets " \
+              f"(asks to continue after every 4 runs) -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
