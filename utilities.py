@@ -6,6 +6,8 @@ import tweepy
 from random import randint
 from typing import TextIO
 
+from word_lists import *
+
 
 def right_now() -> str:
     return datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
@@ -18,7 +20,7 @@ def report(message: str, logfile: TextIO):
 
 def follow_and_report(logfile: TextIO, client: requests.session, author_id: int, author: str):
     client.follow_user(author_id)
-    message = f"    [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
+    message = f"/ / / / [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
     report(message=message, logfile=logfile)
 
 
@@ -26,11 +28,9 @@ def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session
     try:
         author_id = tweet.data['author_id']
         author = api.get_user(user_id=author_id).screen_name
-
         random_number = randint(1, 20)
         if random_number == 15:
             follow_and_report(logfile=logfile, client=client, author_id=author_id, author=author)
-
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
         report(message=message, logfile=logfile)
@@ -51,11 +51,16 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
             report(message=message, logfile=logfile)
 
 
-def like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
-    client.like(tweet.id)
-    message = f"[LIKED TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
-              f"    {tweet.text[0:70]}\n" \
-              f"    [liked time]: {right_now()}"
+def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet, logfile: TextIO, tweet_run: int, tweet_count: int):
+    maybe = randint(1, 2)
+    if maybe == 2:
+        client.like(tweet.id)
+        message = f"[LIKED TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
+                  f"    {tweet.text[0:70]}\n" \
+                  f"    [liked time]: {right_now()}"
+    else:
+        message = f"[DID NOT LIKE TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
+                  f"    [not liked time]: {right_now()}"
     report(message=message, logfile=logfile)
 
 
@@ -65,7 +70,8 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
     tweet_count = 1
     for tweet in tweets.data:
         try:
-            like_and_report(client=client, tweet=tweet, logfile=logfile, tweet_run=tweet_run, tweet_count=tweet_count)
+            maybe_like_and_report(client=client, tweet=tweet, logfile=logfile,
+                                  tweet_run=tweet_run, tweet_count=tweet_count)
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
             tweet_count += 1
             time.sleep(randint(20, 45))
@@ -73,6 +79,11 @@ def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
             message = f"[OOPS] -- {e} --- {right_now()}"
             report(message=message, logfile=logfile)
             time.sleep(10)
+        try:
+            random_tweet(logfile=logfile)
+        except Exception as oops:
+            message = f"[OOPS] -- {oops} -- {right_now()}"
+            report(message=message, logfile=logfile)
 
 
 def log_next_run(logfile: TextIO, tweet_run: int):
@@ -99,9 +110,49 @@ def go_again(logfile: TextIO) -> bool:
         report(message=message, logfile=logfile)
 
 
+def random_tweet(logfile: TextIO):
+    tweet_chance = randint(1, 1000)
+    if tweet_chance == 42:
+        try:
+            hashes = []
+            tweet_choice = ice_breakers[randint(1, len(ice_breakers))]
+            for noun in nouns:
+                single = f' {noun} '
+                plural = f' {noun}s '
+                if single in tweet_choice:
+                    hashes.append(noun)
+                elif plural in tweet_choice:
+                    hashes.append(f"{noun}s")
+                else:
+                    pass
+            for verb in verbs:
+                single = f' {verb} '
+                plural = f' {verb}s '
+                if single in tweet_choice:
+                    hashes.append(verb)
+                elif plural in tweet_choice:
+                    hashes.append(f"{verb}s")
+                else:
+                    pass
+            message = f"{tweet_choice}\n\n"
+            for hashtag in hashes:
+                message += f"#{hashtag} "
+            report(message=message, logfile=logfile)
+        except Exception as oops:
+            message = f"[OOPS] -- {oops} -- {right_now()}"
+            report(message=message, logfile=logfile)
+
+    else:
+        pass
+
+
 def main(followers: list[int], following: list[int], logfile: TextIO,
          client: requests.session, api: tweepy.API, query: str, tweet_run: int):
-    follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
+    try:
+        follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
+    except Exception as oops:
+        message = f"[OOPS] -- {oops} -- {right_now()}"
+        report(message=message, logfile=logfile)
     for i in range(0, 4):
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
