@@ -111,41 +111,45 @@ def go_again(logfile: TextIO) -> bool:
         report(message=message, logfile=logfile)
 
 
+def build_hashtags(word_filter: list[str], tweet_choice: str) -> list[str]:
+    hashes = []
+    for word in word_filter:
+        single = f' {word} '.lower()
+        plural = f' {word}s '.lower()
+        if single in tweet_choice:
+            hashes.append(word.lower())
+        elif plural in tweet_choice:
+            hashes.append(f"{word}s".lower())
+        else:
+            pass
+    return hashes
+
+
+def aux_verb_hash(tweet_choice: str) -> list[str]:
+    hashes = []
+    for a_verb in auxiliary_verbs:
+        isolated = f" {a_verb} ".lower()
+        pattern = r"(?:" + re.escape(isolated) + r"\: ).+\b"
+        after_aux_verbs = re.findall(pattern=pattern, string=tweet_choice)
+        for word in after_aux_verbs:
+            hashes.append(word.lower())
+    return hashes
+
+
 def random_tweet(logfile: TextIO):
     tweet_chance = randint(1, 1000)
     if tweet_chance == 42:
         try:
-            hashes = []
             tweet_choice = ice_breakers[randint(1, len(ice_breakers))].lower()
-            for noun in nouns:
-                single = f' {noun} '.lower()
-                plural = f' {noun}s '.lower()
-                if single in tweet_choice:
-                    hashes.append(noun.lower())
-                elif plural in tweet_choice:
-                    hashes.append(f"{noun}s".lower())
-                else:
-                    pass
-            for verb in verbs:
-                single = f' {verb} '.lower()
-                plural = f' {verb}s '.lower()
-                if single in tweet_choice:
-                    hashes.append(verb.lower())
-                elif plural in tweet_choice:
-                    hashes.append(f"{verb}s".lower())
-                else:
-                    pass
-            for a_verb in auxiliary_verbs:
-                isolated = f" {a_verb} ".lower()
-                pattern = r"(?:" + re.escape(isolated) + r"\: ).+\b"
-                after_aux_verbs = re.findall(pattern=pattern, string=tweet_choice)
-                for word in after_aux_verbs:
-                    hashes.append(word.lower())
+            hashes = build_hashtags(word_filter=nouns, tweet_choice=tweet_choice)
+            hashes += build_hashtags(word_filter=verbs, tweet_choice=tweet_choice)
+            hashes += aux_verb_hash(tweet_choice=tweet_choice)
             hashes = [*set(hashes)]
             message = f"{tweet_choice}\n\n".lower()
             for hashtag in hashes:
                 message += f"#{hashtag} ".lower()
             report(message=message, logfile=logfile)
+            return hashes
         except Exception as oops:
             message = f"[OOPS] -- {oops} -- {right_now()}"
             report(message=message, logfile=logfile)
