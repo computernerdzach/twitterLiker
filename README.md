@@ -4,7 +4,7 @@
 ### V1.2: 
 * TwitterLiker now likes about 50% of the tweets it finds, follows about 5% of the authors of tweets it likes, and for each tweet has a 0.1% chance of randomly publishing an icebreaker tweet, complete with hashtags.
 
-## Setup
+# Setup
 
 ### Create a Twitter bot
    * Apply for a Twitter developer account.
@@ -22,14 +22,14 @@
 * The `query` variable:
   * learn to build Twitter queries click [here](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query).
 
-## Running
+# Running
 Navigate to the root directory and enter the following command to run the app.
 ```bash
 python3 main.py
 ```
-## Stopping
+# Stopping
 Currently there is no graceful way to exit unless you want to wait for the current run of 100 tweets (at 45 seconds 
 per tweet) to finish, at which point the app will ask if you want to continue. If you want to stop at any other time, you will need to press the `ctrl` and `C` keys at the same time.
 
-## Contributing
-The repo is currently open for all, but please inquire before making changes.
+# Contributing
+The repo is currently open for all, but please inquire before making changes since this is a learning opportunity for me.
