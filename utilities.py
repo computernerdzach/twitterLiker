@@ -67,9 +67,8 @@ def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet,
     report(message=message, logfile=logfile)
 
 
-# like each tweet
-def like_tweet_random_follow(tweets: {requests.Response}, logfile: TextIO,
-                             client: requests.session, api: tweepy.API, tweet_run: int):
+def like_follow_post(tweets: {requests.Response}, logfile: TextIO,
+                     client: requests.session, api: tweepy.API, tweet_run: int):
     tweet_count = 1
     for tweet in tweets.data:
         try:
@@ -169,5 +168,5 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
-        like_tweet_random_follow(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
+        like_follow_post(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
     return tweet_run + 1
