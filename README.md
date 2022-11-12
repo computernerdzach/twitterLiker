@@ -1,5 +1,8 @@
 # TwitterLiker
-TwitterLiker is a bot that likes tweets based on hashtags, and randomly follows some of the authors of those tweets.
+### V1.1: 
+* TwitterLiker is a bot that likes tweets based on hashtags, and randomly follows some of the authors of those tweets.
+### V1.2: 
+* TwitterLiker now likes about 50% of the tweets it finds, follows about 5% of the authors of tweets it likes, and for each tweet has a 0.1% chance of randomly publishing an icebreaker tweet, complete with hashtags.
 
 ## Setup
 
