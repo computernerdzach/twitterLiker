@@ -19,38 +19,43 @@ def report(message: str, logfile: TextIO):
     logfile.write(f"{message}\n")
 
 
-def follow_and_report(logfile: TextIO, client: requests.session, author_id: int, author: str):
-    client.follow_user(author_id)
-    message = f"/ / / / [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
-    report(message=message, logfile=logfile)
-
-
 def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session, api: tweepy.API):
     try:
         author_id = tweet.data['author_id']
         author = api.get_user(user_id=author_id).screen_name
         random_number = randint(1, 20)
         if random_number == 15:
-            follow_and_report(logfile=logfile, client=client, author_id=author_id, author=author)
+            client.follow_user(author_id)
+            message = f"/ / / / [RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
+        else:
+            message = f"/ / / / [NO RANDOM FOLLOW] -- author: {author} -- {right_now()}"
+        report(message=message, logfile=logfile)
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
         report(message=message, logfile=logfile)
 
 
 def follow_back(followers: list, following: list, logfile: TextIO, client: requests.session, api: tweepy.API):
+    follower_index = 1
     for follower in followers:
+
         if follower not in following:
             try:
                 client.follow_user(follower)
                 message = f"[FOLLOW BACK] -- now following: " \
-                          f"{api.get_user(user_id=follower).screen_name} -- {right_now()}"
+                          f"{api.get_user(user_id=follower).screen_name} -- {right_now()}\n" \
+                          f"follower index {follower_index} out of {len(followers)}"
                 report(message=message, logfile=logfile)
+                follower_index += 1
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 report(message=message, logfile=logfile)
+                follower_index += 1
         else:
-            message = f"[NO FOLLOW] -- already following {api.get_user(user_id=follower).screen_name}"
+            message = f"[NO FOLLOW] -- already following {api.get_user(user_id=follower).screen_name}\n" \
+                      f"follower index {follower_index} out of {len(followers)}"
             report(message=message, logfile=logfile)
+            follower_index += 1
 
 
 def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet,
@@ -68,7 +73,7 @@ def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet,
 
 
 def like_follow_post(tweets: {requests.Response}, logfile: TextIO,
-                     client: requests.session, api: tweepy.API, tweet_run: int):
+                     client: requests.session, api: tweepy.API, tweet_run: int, used_tweets: TextIO):
     tweet_count = 1
     for tweet in tweets.data:
         try:
@@ -82,7 +87,7 @@ def like_follow_post(tweets: {requests.Response}, logfile: TextIO,
             report(message=message, logfile=logfile)
             time.sleep(10)
         try:
-            random_tweet(logfile=logfile, api=api)
+            random_tweet(logfile=logfile, api=api, used_file=used_tweets)
         except Exception as oops:
             message = f"[OOPS] -- {oops} -- {right_now()}"
             report(message=message, logfile=logfile)
@@ -146,6 +151,7 @@ def random_tweet(logfile: TextIO, api: tweepy.API, used_file: TextIO):
                 hashes += build_hashtags(word_filter=verbs, tweet_choice=tweet_choice)
                 hashes += aux_verb_hash(tweet_choice=tweet_choice)
                 hashes = [*set(hashes)]
+                report(message="[RANDOM TWEET POSTED]:\n")
                 message = f"{tweet_choice}\n\n".lower()
                 for hashtag in hashes:
                     message += f"#{hashtag} ".lower()
@@ -158,7 +164,7 @@ def random_tweet(logfile: TextIO, api: tweepy.API, used_file: TextIO):
 
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
-         client: requests.session, api: tweepy.API, query: str, tweet_run: int):
+         client: requests.session, api: tweepy.API, query: str, tweet_run: int, used_tweets: TextIO):
     try:
         follow_back(followers=followers, following=following, logfile=logfile, client=client, api=api)
     except Exception as oops:
@@ -168,5 +174,6 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
-        like_follow_post(tweets=tweets, logfile=logfile, client=client, api=api, tweet_run=tweet_run)
-    return tweet_run + 1
+        like_follow_post(tweets=tweets, logfile=logfile, client=client, api=api,
+                         tweet_run=tweet_run, used_tweets=used_tweets)
+        tweet_run += 1

@@ -21,15 +21,28 @@ report(message=message, logfile=logfile)
 run = True
 tweet_run = 1
 
-while run:
-    tweet_run = main(followers=followers, following=following, logfile=logfile,
-                     client=client, api=api, query=query, tweet_run=tweet_run)
 
-    run = go_again(logfile=logfile)
+try:
+    while run:
+        tweet_run = main(followers=followers, following=following, logfile=logfile,
+                         client=client, api=api, query=query, tweet_run=tweet_run, used_tweets=used_tweets)
 
-    log_next_run(logfile=logfile, tweet_run=tweet_run)
+        run = go_again(logfile=logfile)
 
-logfile.close()
-used_tweets.close()
+        log_next_run(logfile=logfile, tweet_run=tweet_run)
 
-sys.exit()
+except KeyboardInterrupt:
+    message = "\nAttempting to close files gracefully."
+    report(message=message, logfile=logfile)
+
+    logfile.close()
+    used_tweets.close()
+
+    print("Open files have been closed. Exiting now.")
+
+    sys.exit()
+
+
+
+
+
