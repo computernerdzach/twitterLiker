@@ -13,23 +13,23 @@
    * Generate access token and secret access token
 
 ### Fill in bot credentials
-* Create a file in the root folder called `credentials.py`.
-* Copy the contents of `credentials_template.py` to the new file.
+* Rename the file `credentials_template.py` to `credentials.py`.
+* Uncomment the credentials dictionary.
 * Change the placeholder values to the appropriate values based on your Twitter bot.
 
 ### Set name and query
-* The `name` variable in `credentials.py` is used only to name the logfile.
 * The `query` variable:
   * learn to build Twitter queries click [here](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query).
 
 # Running
 Navigate to the root directory and enter the following command to run the app.
 ```bash
-python3 main.py
+python3 main.py --name BOTNAME
 ```
+Replace the `BOTNAME` string with the name of your bot, making sure to match the value in the credentials dictionary.
 # Stopping
-Currently there is no graceful way to exit unless you want to wait for the current run of 100 tweets (at 45 seconds 
-per tweet) to finish, at which point the app will ask if you want to continue. If you want to stop at any other time, you will need to press the `ctrl` and `C` keys at the same time.
+* After each set of 4 runs (1 run consisting of 100 tweets) the user will be asked if they want to continue.
+* You can terminate gracefully with a keyboard interrupt `[ctrl]` + `[C]`. The program will close any open files and exit with 
 
 # Contributing
 The repo is currently open for all, but please inquire before making changes since this is a learning opportunity for me.

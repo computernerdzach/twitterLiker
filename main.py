@@ -1,10 +1,23 @@
+import argparse
 import sys
 
-from credentials import *
+
+from credentials import credentials
 from utilities import *
 
-logfile = open(f'twitter-like-log-{name}.log', 'a')
-used_tweets = open(f'{name}_used_tweets.log', 'w+')
+parser = argparse.ArgumentParser()
+parser.add_argument("--name", "-n")
+args = parser.parse_args()
+
+name = args.name
+token_bearer = credentials[name]['token_bearer']
+api_key = credentials[name]['api_key']
+api_secret = credentials[name]['api_secret']
+access_token = credentials[name]['access_token']
+access_token_secret = credentials[name]['access_token_secret']
+query = credentials[name]['query']
+
+logfile = open(f'logs/twitter-like-log-{name}.txt', 'a')
 
 client = tweepy.Client(token_bearer, api_key, api_secret, access_token=access_token,
                        access_token_secret=access_token_secret)
@@ -15,7 +28,7 @@ api = tweepy.API(auth=auth)
 followers = api.get_follower_ids()
 following = api.get_friend_ids()
 
-message = f"[BEGIN LOG] -- {name}'s log -- {right_now()}"
+message = f"[BEGIN LOG] -- {name}'s log -- {right_now()}\n-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~"
 report(message=message, logfile=logfile)
 
 run = True
@@ -25,7 +38,7 @@ tweet_run = 1
 try:
     while run:
         tweet_run = main(followers=followers, following=following, logfile=logfile,
-                         client=client, api=api, query=query, tweet_run=tweet_run, used_tweets=used_tweets)
+                         client=client, api=api, query=query, tweet_run=tweet_run, name=name)
 
         run = go_again(logfile=logfile)
 
@@ -36,7 +49,6 @@ except KeyboardInterrupt:
     report(message=message, logfile=logfile)
 
     logfile.close()
-    used_tweets.close()
 
     print("Open files have been closed. Exiting now.")
 

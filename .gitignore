@@ -1,7 +1,5 @@
 credentials.py
-twitter-like-log-Estefania.log
-twitter-like-log-Gale.log
-Gale_used_tweets.log
-Estefania_used_tweets.log
+logs
 .idea
 __pycache__
+venv
