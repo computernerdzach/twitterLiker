@@ -17,16 +17,16 @@
 * Uncomment the credentials dictionary.
 * Change the placeholder values to the appropriate values based on your Twitter bot.
 
-### Set name and query
-* The `query` variable:
-  * learn to build Twitter queries click [here](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query).
+### Set query
+* Learn to build Twitter queries click [here](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query).
+* A basic query is used for a placeholder value as an example for the user.
 
 # Running
 Navigate to the root directory and enter the following command to run the app.
 ```bash
 python3 main.py --name BOTNAME
 ```
-Replace the `BOTNAME` string with the name of your bot, making sure to match the value in the credentials dictionary.
+Replace the `BOTNAME` string with the name of your bot, making sure to match the value in the credentials dictionary found in `credentials.py`.
 # Stopping
 * After each set of 4 runs (1 run consisting of 100 tweets) the user will be asked if they want to continue.
 * You can terminate gracefully with a keyboard interrupt `[ctrl]` + `[C]`. The program will close any open files and exit with 
