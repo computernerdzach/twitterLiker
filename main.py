@@ -8,8 +8,8 @@ from utilities import *
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", "-n")
 args = parser.parse_args()
-
 name = args.name
+
 token_bearer = credentials[name]['token_bearer']
 api_key = credentials[name]['api_key']
 api_secret = credentials[name]['api_secret']
@@ -39,19 +39,14 @@ try:
     while run:
         tweet_run = main(followers=followers, following=following, logfile=logfile,
                          client=client, api=api, query=query, tweet_run=tweet_run, name=name)
-
         run = go_again(logfile=logfile)
-
         log_next_run(logfile=logfile, tweet_run=tweet_run)
 
 except KeyboardInterrupt:
     message = "\nAttempting to close files gracefully."
     report(message=message, logfile=logfile)
-
     logfile.close()
-
     print("Open files have been closed. Exiting now.")
-
     sys.exit()
 
 
