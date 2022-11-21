@@ -60,12 +60,6 @@ def follow_back(followers: list, following: list, logfile: TextIO, client: reque
                       f"follower index {follower_index+1} out of {len(followers)}\n"
                 message += "-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~"
                 report(message, logfile)
-
-        # else:
-        #     message = f"[NO FOLLOW] -- already following {api.get_user(user_id=follower).screen_name}\n" \
-        #               f"follower index {follower_index+1} out of {len(followers)}"
-        #     report(message=message, logfile=logfile)
-        # report("-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~", logfile)
         follower_index += 1
 
 
