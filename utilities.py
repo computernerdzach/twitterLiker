@@ -1,6 +1,9 @@
+import os
 import string
 import time
 import datetime
+from pathlib import Path
+
 import requests
 import tweepy
 import re
@@ -156,26 +159,29 @@ def build_hashtags(tweet_choice: str) -> list[str]:
 def random_tweet(logfile: TextIO, api: tweepy.API, name):
     tweet_chance = randint(1, 10000)
     if tweet_chance == 42:
+        tweet_log = Path(f"/home/zach/PycharmProjects/twitterLiker/logs/{name}_used_tweets.txt")
+        tweet_log.touch(exist_ok=True)
+        with open(tweet_log, "r") as read_used:
+            used_tweets = read_used.readlines()
         tweet_roll = randint(1, len(ice_breakers))
         tweet_choice = ice_breakers[tweet_roll]
-        used_file = open(f'logs/{name}_used_tweets.txt', 'w+')
-        if tweet_choice not in used_file:
+        if tweet_choice not in used_tweets:
             try:
-                tweet_choice = tweet_choice.lower()
+                with open(tweet_log, "w+") as write_used:
+                    tweet_choice = tweet_choice.lower()
+                    used_tweets.append(tweet_choice)
+                    write_used.writelines(used_tweets)
                 hashes = build_hashtags(tweet_choice)
                 hashes = [*set(hashes)]
-                report(message="[RANDOM TWEET POSTED]:\n", logfile=logfile)
                 message = f"{tweet_choice}\n\n".lower()
                 for hashtag in hashes:
                     message += f"#{hashtag} ".lower()
                 api.update_status(message)
-                used_file.write(f"'{tweet_choice}',\n")
-                used_file.close()
+                report(message="[RANDOM TWEET POSTED]:\n", logfile=logfile)
                 reported_tweet = f"\n\n{message}\n\n"
                 report(message=reported_tweet, logfile=logfile)
             except Exception as oops:
                 message = f"[OOPS] -- {oops} -- {right_now()}"
-                used_file.close()
                 report(message=message, logfile=logfile)
 
 
