@@ -28,9 +28,8 @@ def random_follow(tweet: tweepy.Tweet, logfile: TextIO, client: requests.session
         if random_number == 15:
             client.follow_user(author_id)
             message = f"[RANDOMLY FOLLOWED AUTHOR] -- author: {author} -- {right_now()}"
-        else:
-            message = f"[NO RANDOM FOLLOW] -- author: {author} -- {right_now()}"
-        report(message=message, logfile=logfile)
+            report(message=message, logfile=logfile)
+
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
         report(message=message, logfile=logfile)
@@ -71,10 +70,7 @@ def maybe_like_and_report(client: requests.session, tweet: tweepy.Tweet,
         message = f"[LIKED TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n\n" \
                   f"{tweet.text}\n\n" \
                   f"[TIME]: {right_now()}"
-    else:
-        message = f"[DID NOT LIKE TWEET] #: {tweet_count} of 100; run: {tweet_run}.\n" \
-                  f"[TIME]: {right_now()}"
-    report(message=message, logfile=logfile)
+        report(message=message, logfile=logfile)
 
 
 def like_follow_post(tweets: {requests.Response}, logfile: TextIO,
@@ -91,7 +87,7 @@ def like_follow_post(tweets: {requests.Response}, logfile: TextIO,
                                   tweet_run=tweet_run, tweet_count=tweet_count)
             random_follow(tweet=tweet, logfile=logfile, client=client, api=api)
             tweet_count += 1
-            time.sleep(randint(20, 45))
+            time.sleep(randint(5, 20))
         except Exception as e:
             message = f"[OOPS] -- {e} --- {right_now()}"
             report(message=message, logfile=logfile)
@@ -181,9 +177,6 @@ def random_tweet(logfile: TextIO, api: tweepy.API, name):
                 message = f"[OOPS] -- {oops} -- {right_now()}"
                 used_file.close()
                 report(message=message, logfile=logfile)
-    else:
-        message = f"[NO RANDOM TWEET]"
-        report(message, logfile)
 
 
 def main(followers: list[int], following: list[int], logfile: TextIO,
@@ -193,7 +186,7 @@ def main(followers: list[int], following: list[int], logfile: TextIO,
     except Exception as oops:
         message = f"[OOPS] -- {oops} -- {right_now()}"
         report(message=message, logfile=logfile)
-    for i in range(0, 4):
+    for i in range(10):
         tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'],
                                              expansions=['entities.mentions.username', 'author_id'],
                                              user_fields=['username'], max_results=100)
