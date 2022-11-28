@@ -1,4 +1,4 @@
-credentials.py
+resources/credentials.py
 logs
 .idea
 __pycache__

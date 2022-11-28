@@ -2,8 +2,8 @@ import argparse
 import sys
 
 
-from credentials import credentials
-from utilities import *
+from resources.credentials import credentials
+from resources.utilities import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", "-n")

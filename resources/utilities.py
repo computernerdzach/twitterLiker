@@ -1,4 +1,3 @@
-import os
 import string
 import time
 import datetime
@@ -11,7 +10,7 @@ import re
 from random import randint
 from typing import TextIO
 
-from word_lists import nouns, verbs, auxiliary_verbs, ice_breakers
+from resources.word_lists import nouns, verbs, auxiliary_verbs, ice_breakers
 
 
 def right_now() -> str:
